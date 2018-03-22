@@ -94,8 +94,11 @@ Complete the implementation of gensym. As usual, you shouldn't feel
 beholden to how the definition is introduced in the skeleton code
 below. (We'll stop mentioning this now.) *)
 
+let n = ref 0 ;;
+
 let gensym (s : string) : string = 
-  failwith "gensym not implemented" ;;
+  let num = !n in inc n ;
+  s^(string_of_int num) ;;
 
 (*====================================================================
 Part 3: Appending mutable lists
@@ -123,8 +126,10 @@ list to a mutable list, with behavior like this:
       Cons (1, {contents = Cons (2, {contents = Cons (3, {contents = Nil})})})
  *)
 
-let mlist_of_list (lst : 'a list) : 'a mlist =
-  failwith "mlist_of_list not implemented" ;;
+let rec mlist_of_list (lst : 'a list) : 'a mlist =
+  match lst with
+  | [] -> Nil
+  | h :: t -> Cons (h, ref (mlist_of_list t)) ;;
 
 (* Define a function length to compute the length of an mlist. Try to
 do this without looking at the solution that is given in the lecture
@@ -136,12 +141,13 @@ slides.
     - : int = 4
  *)
 
-let length (m : 'a mlist) : int = 
-  failwith "length not implemented" ;;
+let rec length (m : 'a mlist) : int = 
+  match m with
+  | Nil -> 0
+  | Cons (a, b) -> 1 + length !b ;;
 
 (* What is the time complexity of the length function in O() notation
 in terms of the length of its list argument? *)
-
 
 (* Now, define a function mappend that takes a *non-empty* mutable
 list and a second mutable list and, as a side effect, causes the first
@@ -208,8 +214,15 @@ Example of use:
               {contents = Cons (5, {contents = Cons (6, {contents = Nil})})})})})})
  *)
 
-let mappend _ = 
-  failwith "mappend not implemented" ;;
+let mappend (a : 'a mlist) (b : 'a mlist) : unit = 
+  match a with
+  | Nil -> ()
+  | Cons (h1, t1) ->
+  	let rec mapp (x : 'a mlist ref) : unit =
+  	match !x with
+  	| Cons (h2, t2) -> mapp t2 
+  	| Nil -> x := b
+  	in mapp t1 ;; 
 
 (* What happens when you evaluate the following expressions
 sequentially in order?
