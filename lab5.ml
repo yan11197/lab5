@@ -47,8 +47,12 @@ This is probably the least functional function ever written.
 As usual, you shouldn't feel beholden to how the definition is
 introduced in the skeleton code below. *)
 
-let remember _ = 
-  failwith "remember not implemented" ;;
+let stor = ref "" ;;
+
+let remember (s : string) : string = 
+  let v = !stor in
+  	stor := s;
+  	v ;;
 
 (*====================================================================
 Part 2: Gensym
